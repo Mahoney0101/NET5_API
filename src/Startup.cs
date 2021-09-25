@@ -38,6 +38,14 @@ namespace API
 
             services.AddSingleton<BookService>();
 
+            services.Configure<UserDatabaseSettings>(
+                Configuration.GetSection(nameof(UserDatabaseSettings)));
+
+            services.AddSingleton<IUserDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<UserDatabaseSettings>>().Value);
+
+            services.AddSingleton<UserService>();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
