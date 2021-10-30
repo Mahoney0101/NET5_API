@@ -8,5 +8,8 @@ RUN dotnet publish ./src --output /app/ -c Release --no-restore -v m
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
+COPY ./certs/Cert.pfx /etc/ssl/certs/Cert.pfx
+
+
 COPY --from=build-env /app/ .
 ENTRYPOINT ["dotnet", "API.dll"]

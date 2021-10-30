@@ -19,7 +19,7 @@ namespace Api.Services
         }
 
         public List<Book> Get() =>
-            _books.Find(book => true).ToList();
+            _books.Find<Book>(book => true).ToList();
 
         public Book Get(string id) =>
             _books.Find<Book>(book => book.Id == id).FirstOrDefault();

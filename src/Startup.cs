@@ -11,18 +11,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 
 namespace API
 {
     public class Startup
     {
+        private readonly IConfiguration c_configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.c_configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -30,8 +29,10 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var _appSettings = this.c_configuration.Get<AppSettings>(options => options.BindNonPublicProperties = true);
+
             services.Configure<BookstoreDatabaseSettings>(
-                Configuration.GetSection(nameof(BookstoreDatabaseSettings)));
+                this.c_configuration.GetSection(nameof(BookstoreDatabaseSettings)));
 
             services.AddSingleton<IBookstoreDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<BookstoreDatabaseSettings>>().Value);
@@ -39,12 +40,13 @@ namespace API
             services.AddSingleton<BookService>();
 
             services.Configure<UserDatabaseSettings>(
-                Configuration.GetSection(nameof(UserDatabaseSettings)));
+                this.c_configuration.GetSection(nameof(UserDatabaseSettings)));
 
             services.AddSingleton<IUserDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<UserDatabaseSettings>>().Value);
 
-            services.AddSingleton<UserService>();
+            services.AddSingleton<UserService>()
+                .AddSingleton<IAppSettings>(_appSettings);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -56,18 +58,14 @@ namespace API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsEnvironment("local"))
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
 
-            app.UseHttpsRedirection();
-
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
