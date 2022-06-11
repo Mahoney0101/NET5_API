@@ -1,4 +1,5 @@
-﻿global using Api.Models;
+﻿global using API;
+global using Api.Models;
 global using Api.Services;
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Hosting;
