@@ -1,13 +1,9 @@
-﻿using System;
+﻿namespace API;
 
-
-namespace API
+public class PostResult
 {
-    public class PostResult
+    public bool GetPostResult()
     {
-        public bool GetPostResult()
-        {
-            return false;
-        }
+        return false;
     }
 }

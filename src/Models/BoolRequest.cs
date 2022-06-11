@@ -1,11 +1,7 @@
-﻿using System;
+﻿namespace API.Models;
 
-
-namespace API.Models
+public class BoolRequest
 {
-    public class BoolRequest
-    {
-        public bool true_or_false { get; set; }
-        public string data { get; set; }
-    }
+    public bool True_or_false { get; set; }
+    public string? Data { get; set; }
 }

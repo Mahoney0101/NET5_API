@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace Api.Models;
 
-namespace Api.Models
+public class UserDatabaseSettings : IUserDatabaseSettings
 {
-    public class UserDatabaseSettings : IUserDatabaseSettings
-    {
-        public string UserCollectionName { get; set; }
-        public string UserConnectionString { get; set; }
-        public string UserDatabaseName { get; set; }
-    }
+    public string? UserCollectionName { get; set; }
+    public string? UserConnectionString { get; set; }
+    public string? UserDatabaseName { get; set; }
+}
 
-    public interface IUserDatabaseSettings
-    {
-        string UserCollectionName { get; set; }
-        string UserConnectionString { get; set; }
-        string UserDatabaseName { get; set; }
-    }
+public interface IUserDatabaseSettings
+{
+    string? UserCollectionName { get; set; }
+    string? UserConnectionString { get; set; }
+    string? UserDatabaseName { get; set; }
 }

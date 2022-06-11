@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace API;
 
-namespace API
+public class AppSettings : IAppSettings
 {
-    public class AppSettings : IAppSettings
-    {
-        public string SSLEncryptedPassword { get; private set; }
-        public string SiteSSLCertificatePath { get; private set; }
-    }
+    public string? SSLEncryptedPassword { get; private set; }
+    public string? SiteSSLCertificatePath { get; private set; }
 }

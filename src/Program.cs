@@ -1,50 +1,55 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
+var builder = WebApplication.CreateBuilder(args);
 
-
-namespace API
+builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 {
-    public class Program
+    serverOptions.ConfigureHttpsDefaults(options => options.SslProtocols = SslProtocols.Tls12);
+
+    ArgumentNullException.ThrowIfNull(serverOptions.ConfigurationLoader);
+    serverOptions.ConfigurationLoader.Endpoint("Https", endPointConfiguration =>
     {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+        var _appSettings = context.Configuration.Get<API.AppSettings>(
+            options => options.BindNonPublicProperties = true);
+        var _SSLSertificateEncryptedPassword = _appSettings.SSLEncryptedPassword;
+        ArgumentNullException.ThrowIfNull(_appSettings.SiteSSLCertificatePath);
+        endPointConfiguration.ListenOptions.UseHttps(_appSettings.SiteSSLCertificatePath, _SSLSertificateEncryptedPassword);
+    });
+});
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(logging =>
-            {
-                logging.ClearProviders();
-                logging.AddSystemdConsole(options =>
-                {
-                    options.TimestampFormat = ".yyyy-MM-dd HH:mm:ss.fff";
-                });
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>()
-                .ConfigureKestrel((context, serverOptions) =>
-                {
-                    serverOptions.ConfigureHttpsDefaults(options => options.SslProtocols = SslProtocols.Tls12);
+ConfigurationManager c_configuration = builder.Configuration;
 
-                    serverOptions.ConfigurationLoader.Endpoint("Https", endPointConfiguration =>
-                    {
-                        var _appSettings = context.Configuration.Get<AppSettings>(
-                            options => options.BindNonPublicProperties = true);
-                        var _SSLSertificateEncryptedPassword = _appSettings.SSLEncryptedPassword;
 
-                        endPointConfiguration.ListenOptions.UseHttps(_appSettings.SiteSSLCertificatePath, _SSLSertificateEncryptedPassword);
-                    });
-                });
-            });
-    }
+var _appSettings = c_configuration.Get<API.AppSettings>(options => options.BindNonPublicProperties = true);
+
+builder.Services.AddSingleton<API.AppSettings>()
+    .AddSingleton<IBookstoreDatabaseSettings>(sp => sp.GetRequiredService<IOptions<BookstoreDatabaseSettings>>().Value)
+    .AddSingleton<BookService>()
+    .AddSingleton<IUserDatabaseSettings>(sp => sp.GetRequiredService<IOptions<UserDatabaseSettings>>().Value)
+    .AddSingleton<UserService>()
+    .AddSingleton<API.IAppSettings>(_appSettings);
+
+
+builder.Services.Configure<BookstoreDatabaseSettings>(c_configuration.GetSection(nameof(BookstoreDatabaseSettings)))
+    .Configure<UserDatabaseSettings>(c_configuration.GetSection(nameof(UserDatabaseSettings)));
+
+builder.Services.AddControllers();
+
+builder.Services.AddHealthChecks();
+
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsEnvironment("local"))
+{
+    app.UseDeveloperExceptionPage();
 }
+
+app.UseRouting();
+
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
+app.Run();

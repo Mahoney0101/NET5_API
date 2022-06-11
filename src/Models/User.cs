@@ -1,18 +1,13 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
+﻿namespace Api.Models;
 
-namespace Api.Models
+public class User
 {
-    public class User
-    {
-        [BsonId]
-        public string Id { get; set; }
+    [BsonId]
+    public string? Id { get; set; }
 
-        [BsonElement("Name")]
-        public string UserName { get; set; }
+    [BsonElement("Name")]
+    public string? UserName { get; set; }
 
-        public string Password { get; set; }
+    public string? Password { get; set; }
 
-    }
 }
