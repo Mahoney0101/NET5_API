@@ -7,6 +7,7 @@ public class BookstoreDatabaseSettings : IBookstoreDatabaseSettings
     public string? DatabaseName { get; set; }
 }
 
+
 public interface IBookstoreDatabaseSettings
 {
     string? BooksCollectionName { get; set; }

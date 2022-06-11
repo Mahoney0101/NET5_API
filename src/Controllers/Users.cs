@@ -9,6 +9,7 @@ public class Users : Controller
         _userService = userService;
     }
 
+
     [HttpGet("{id}", Name = "GetUser")]
     public ActionResult<User> Get(string id)
     {
@@ -21,6 +22,7 @@ public class Users : Controller
 
         return book;
     }
+
 
     [HttpPost]
     [Route("login")]

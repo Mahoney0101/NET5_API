@@ -11,12 +11,14 @@ public class BooksController : ControllerBase
         _bookService = bookService;
     }
 
+
     [HttpGet]
     [Route("Time")]
     public string GetTime()
     {
         return DateTime.Now.ToString("h:mm:ss tt");
     }
+
 
     [HttpGet]
     public ActionResult<List<Book>> Get() =>
@@ -35,6 +37,7 @@ public class BooksController : ControllerBase
         return book;
     }
 
+
     [HttpPost]
     public ActionResult<Book> Create(Book book)
     {
@@ -42,6 +45,7 @@ public class BooksController : ControllerBase
         ArgumentNullException.ThrowIfNull(book.Id);
         return CreatedAtRoute("GetBook", new { id = book.Id.ToString() }, book);
     }
+
 
     [HttpPut("{id}")]
     public IActionResult Update(string id, Book bookIn)
@@ -57,6 +61,7 @@ public class BooksController : ControllerBase
 
         return NoContent();
     }
+
 
     [HttpDelete("{id}")]
     public IActionResult Delete(string id)

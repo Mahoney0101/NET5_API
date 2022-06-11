@@ -7,6 +7,7 @@ public class UserDatabaseSettings : IUserDatabaseSettings
     public string? UserDatabaseName { get; set; }
 }
 
+
 public interface IUserDatabaseSettings
 {
     string? UserCollectionName { get; set; }

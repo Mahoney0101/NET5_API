@@ -17,7 +17,6 @@ builder.WebHost.ConfigureKestrel((context, serverOptions) =>
 
 ConfigurationManager c_configuration = builder.Configuration;
 
-
 var _appSettings = c_configuration.Get<API.AppSettings>(options => options.BindNonPublicProperties = true);
 
 builder.Services.AddSingleton<API.AppSettings>()
@@ -26,7 +25,6 @@ builder.Services.AddSingleton<API.AppSettings>()
     .AddSingleton<IUserDatabaseSettings>(sp => sp.GetRequiredService<IOptions<UserDatabaseSettings>>().Value)
     .AddSingleton<UserService>()
     .AddSingleton<API.IAppSettings>(_appSettings);
-
 
 builder.Services.Configure<BookstoreDatabaseSettings>(c_configuration.GetSection(nameof(BookstoreDatabaseSettings)))
     .Configure<UserDatabaseSettings>(c_configuration.GetSection(nameof(UserDatabaseSettings)));
@@ -45,7 +43,6 @@ if (app.Environment.IsEnvironment("local"))
 }
 
 app.UseRouting();
-
 
 app.UseEndpoints(endpoints =>
 {
