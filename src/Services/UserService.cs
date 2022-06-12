@@ -2,40 +2,52 @@
 
 public class UserService
 {
-    private readonly IMongoCollection<User> _users;
+    private readonly IMongoCollection<User> c_users;
 
     public UserService(IUserDatabaseSettings settings)
     {
         var client = new MongoClient(settings.UserConnectionString);
         var database = client.GetDatabase(settings.UserDatabaseName);
 
-        _users = database.GetCollection<User>(settings.UserCollectionName);
+        c_users = database.GetCollection<User>(settings.UserCollectionName);
     }
 
 
-    public List<User> Get() =>
-        _users.Find(user => true).ToList();
-
-
-    public User Get(string id) =>
-        _users.Find(user => user.Id == id).FirstOrDefault();
-
-
-    public User Create(User user)
+    public async Task<List<User>> Get()
     {
-        _users.InsertOne(user);
+        var _userCollection = await c_users.FindAsync(user => true);
+        return _userCollection.ToList();
+    }
+
+
+    public async Task<User> Get(string id)
+    {
+        var _user = await c_users.FindAsync(user => user.Id == id);
+        return _user.FirstOrDefault();
+    }
+
+
+    public async Task<User> Create(User user)
+    {
+        await c_users.InsertOneAsync(user);
         return user;
     }
 
 
-    public void Update(string id, User userIn) =>
-        _users.ReplaceOne(user => user.Id == id, userIn);
+    public async Task Update(string id, User userIn)
+    {
+        await c_users.ReplaceOneAsync(user => user.Id == id, userIn);
+    }
 
 
-    public void Remove(User userIn) =>
-        _users.DeleteOne(user => user.Id == userIn.Id);
+    public async Task Remove(User userIn)
+    {
+        await c_users.DeleteOneAsync(user => user.Id == userIn.Id);
+    }
 
 
-    public void Remove(string id) =>
-        _users.DeleteOne(user => user.Id == id);
+    public async Task Remove(string id)
+    {
+        await c_users.DeleteOneAsync(user => user.Id == id);
+    }
 }

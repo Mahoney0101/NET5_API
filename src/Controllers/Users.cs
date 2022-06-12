@@ -2,18 +2,18 @@
 
 public class Users : Controller
 {
-    private readonly UserService _userService;
+    private readonly UserService c_userService;
 
     public Users(UserService userService)
     {
-        _userService = userService;
+        c_userService = userService;
     }
 
 
     [HttpGet("{id}", Name = "GetUser")]
-    public ActionResult<User> Get(string id)
+    public async Task<ActionResult<User>> Get(string id)
     {
-        var book = _userService.Get(id);
+        var book = await c_userService.Get(id);
 
         if (book == null)
         {
@@ -26,9 +26,9 @@ public class Users : Controller
 
     [HttpPost]
     [Route("login")]
-    public ActionResult<User> Create(User user)
+    public async Task<ActionResult<User>> Create(User user)
     {
-        _userService.Create(user);
+        await c_userService.Create(user);
         ArgumentNullException.ThrowIfNull(user.Id);
         return CreatedAtRoute("GetUser", new { id = user.Id.ToString() }, user);
     }

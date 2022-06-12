@@ -4,11 +4,11 @@
 [ApiController]
 public class BooksController : ControllerBase
 {
-    private readonly BookService _bookService;
+    private readonly BookService c_bookService;
 
     public BooksController(BookService bookService)
     {
-        _bookService = bookService;
+        c_bookService = bookService;
     }
 
 
@@ -21,13 +21,16 @@ public class BooksController : ControllerBase
 
 
     [HttpGet]
-    public ActionResult<List<Book>> Get() =>
-        _bookService.Get();
+    public async Task<ActionResult<List<Book>>> Get() 
+    { 
+        return await c_bookService.Get();
+    }
+
 
     [HttpGet("{id}", Name = "GetBook")]
-    public ActionResult<Book> Get(string id)
+    public async Task<ActionResult<Book>> Get(string id)
     {
-        var book = _bookService.Get(id);
+        var book = await c_bookService.Get(id);
 
         if (book == null)
         {
@@ -39,41 +42,42 @@ public class BooksController : ControllerBase
 
 
     [HttpPost]
-    public ActionResult<Book> Create(Book book)
+    public async Task<ActionResult<Book>> Create(Book book)
     {
-        _bookService.Create(book);
+        await c_bookService.Create(book);
         ArgumentNullException.ThrowIfNull(book.Id);
+
         return CreatedAtRoute("GetBook", new { id = book.Id.ToString() }, book);
     }
 
 
     [HttpPut("{id}")]
-    public IActionResult Update(string id, Book bookIn)
+    public async Task<IActionResult> Update(string id, Book bookIn)
     {
-        var book = _bookService.Get(id);
+        var book = await c_bookService.Get(id);
 
         if (book == null)
         {
             return NotFound();
         }
 
-        _bookService.Update(id, bookIn);
+        await c_bookService.Update(id, bookIn);
 
         return NoContent();
     }
 
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(string id)
+    public async Task<IActionResult> Delete(string id)
     {
-        var book = _bookService.Get(id);
+        var book = await c_bookService.Get(id);
 
         if (book == null)
         {
             return NotFound();
         }
         ArgumentNullException.ThrowIfNull(book.Id);
-        _bookService.Remove(book.Id);
+        await c_bookService.Remove(book.Id);
 
         return NoContent();
     }

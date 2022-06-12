@@ -2,40 +2,52 @@
 
 public class BookService
 {
-    private readonly IMongoCollection<Book> _books;
+    private readonly IMongoCollection<Book> c_books;
 
     public BookService(IBookstoreDatabaseSettings settings)
     {
         var client = new MongoClient(settings.ConnectionString);
         var database = client.GetDatabase(settings.DatabaseName);
 
-        _books = database.GetCollection<Book>(settings.BooksCollectionName);
+        c_books = database.GetCollection<Book>(settings.BooksCollectionName);
     }
 
 
-    public List<Book> Get() =>
-        _books.Find<Book>(book => true).ToList();
-
-
-    public Book Get(string id) =>
-        _books.Find<Book>(book => book.Id == id).FirstOrDefault();
-
-
-    public Book Create(Book book)
+    public async Task<List<Book>> Get()
     {
-        _books.InsertOne(book);
+        var _booksCollection = await c_books.FindAsync<Book>(book => true);
+        return _booksCollection.ToList();
+    }
+
+
+    public async Task<Book> Get(string id)
+    {
+        var _book = await c_books.FindAsync<Book>(book => book.Id == id);
+        return _book.FirstOrDefault();
+    }
+
+
+    public async Task<Book> Create(Book book)
+    {
+        await c_books.InsertOneAsync(book);
         return book;
     }
 
 
-    public void Update(string id, Book bookIn) =>
-        _books.ReplaceOne(book => book.Id == id, bookIn);
+    public async Task Update(string id, Book bookIn)
+    {
+        await c_books.ReplaceOneAsync(book => book.Id == id, bookIn);
+    }
 
 
-    public void Remove(Book bookIn) =>
-        _books.DeleteOne(book => book.Id == bookIn.Id);
+    public async Task Remove(Book bookIn)
+    {
+        await c_books.DeleteOneAsync(book => book.Id == bookIn.Id);
+    }
 
 
-    public void Remove(string id) =>
-        _books.DeleteOne(book => book.Id == id);
+    public async Task Remove(string id)
+    {
+        await c_books.DeleteOneAsync(book => book.Id == id);
+    }
 }
