@@ -1,4 +1,4 @@
-# NET5_API
+# NET6_API
 API containerised and deployed to an AWS EC2 instance. The API is connected to a cloud hosted Mongo database using MongoDB Atlas.
 
 ## **Docker images**
